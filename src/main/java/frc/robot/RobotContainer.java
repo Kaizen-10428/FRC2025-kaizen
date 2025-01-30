@@ -24,9 +24,9 @@ import frc.robot.subsystems.CoralPlacer;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Funnel;
-import frc.robot.subsystems.gimbal;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.elevatorcmd;
+import frc.robot.limelight.Limelight3DDistance;
 import frc.robot.commands.IntakeCmd;
 
 public class RobotContainer {
@@ -36,24 +36,23 @@ public class RobotContainer {
   XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
   XboxController m_mechController = new XboxController(1);
   //public final gimbal gimbal = new gimbal();
+  public final Limelight3DDistance aprilDistance = new Limelight3DDistance();
   public final CoralPlacer coral = new CoralPlacer();
-  private final SendableChooser<Command> autoChooser;
+  // private final SendableChooser<Command> autoChooser;
   public final Funnel funnel = new Funnel();
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
 
-
-
   public RobotContainer(){
-    autoChooser = AutoBuilder.buildAutoChooser("New Auto");
-    SmartDashboard.putData("Auto Chooser", autoChooser);
-    CoralPlacer coral_intake = new CoralPlacer();
-    Elevator elevator_move = new Elevator();
-    NamedCommands.registerCommand("OpenIntake", new IntakeCmd(coral_intake, 0.6));
-    NamedCommands.registerCommand("Elevator Lowest", new elevatorcmd(elevator_move, 0));
-    NamedCommands.registerCommand("Elevator L1", new elevatorcmd(elevator_move, 18));
-    NamedCommands.registerCommand("Elevator L2", new elevatorcmd(elevator_move, 54));
-    NamedCommands.registerCommand("Elevator L3", new elevatorcmd(elevator_move, 108));
-    NamedCommands.registerCommand("Elevator L4", new elevatorcmd(elevator_move, 150));
+    // autoChooser = AutoBuilder.buildAutoChooser("New Auto");
+    // SmartDashboard.putData("Auto Chooser", autoChooser);
+    // CoralPlacer coral_intake = new CoralPlacer();
+    // Elevator elevator_move = new Elevator();
+    // NamedCommands.registerCommand("OpenIntake", new IntakeCmd(coral_intake, 0.6));
+    // NamedCommands.registerCommand("Elevator Lowest", new elevatorcmd(elevator_move, 0));
+    // NamedCommands.registerCommand("Elevator L1", new elevatorcmd(elevator_move, 18));
+    // NamedCommands.registerCommand("Elevator L2", new elevatorcmd(elevator_move, 54));
+    // NamedCommands.registerCommand("Elevator L3", new elevatorcmd(elevator_move, 108));
+    // NamedCommands.registerCommand("Elevator L4", new elevatorcmd(elevator_move, 150));
 
         
     configureBindings();  
@@ -70,13 +69,12 @@ public class RobotContainer {
   }
    
   private void configureBindings() {
-    // new JoystickButton(m_driverController, Button.kR1.value)
-    // .whileTrue(new RunCommand(
-    //   () -> m_robotDrive.setX(),
-    //   m_robotDrive));
-  // new Trigger(() ->Math.abs(m_driverController.getRightY())>0.1)
-  // .whileTrue(new RunCommand(() -> gimbal.GimbalControl(m_driverController.getRightY()), gimbal));
+    new JoystickButton(m_driverController, Button.kR1.value)
+    .whileTrue(new RunCommand(
+      () -> m_robotDrive.setX(),
+      m_robotDrive));
   
+ // Elevator stuff
   new Trigger(() -> m_mechController.getLeftTriggerAxis()>0.1)
     .whileTrue(new RunCommand(() -> elevator.ElevatorUP(m_mechController.getLeftTriggerAxis()), elevator));
   
@@ -118,16 +116,19 @@ public class RobotContainer {
   new POVButton(m_mechController, 270)
         .whileTrue( new RunCommand(
           () -> funnel.CoralAcceptor(-0.4),funnel));
+  
+  new JoystickButton(m_driverController, Button.kCross.value)         //NEED TO DECIDE BUTTON TO TRIGGER THIS
+  .whileTrue(new RunCommand(
+    () -> aprilDistance.updateDistance(m_robotDrive),
+    m_robotDrive
+  ));
 
+
+        }
+
+
+
+  // public Command getAutonomousCommand() {
     
-    // new POVButton(m_mechController, 180)
-    // .onTrue( new RunCommand(
-    //   () -> gimbal.GimbalDogree(10),gimbal));
-}
-
-
-
-  public Command getAutonomousCommand() {
-    return autoChooser.getSelected();
-  }
+  // }
 }
