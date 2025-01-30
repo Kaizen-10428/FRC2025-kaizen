@@ -10,7 +10,7 @@ public class Funnel extends SubsystemBase{
     private final SparkMax lIntakeMax;
 
     public Funnel(){
-        lIntakeMax = new SparkMax(12,MotorType.kBrushless);
+        lIntakeMax = new SparkMax(16,MotorType.kBrushless);
         lIntakeMax.set(0);
     }
 

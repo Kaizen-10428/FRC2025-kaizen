@@ -37,7 +37,7 @@ public class RobotContainer {
   // public final Grabber grabber = new Grabber();
   XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
   XboxController m_mechController = new XboxController(1);
-  public final LinearSlide slide = new LinearSlide();
+  // public final LinearSlide slide = new LinearSlide();
   //public final gimbal gimbal = new gimbal();
   public final Limelight3DDistance aprilDistance = new Limelight3DDistance();
   public final CoralPlacer coral = new CoralPlacer();
