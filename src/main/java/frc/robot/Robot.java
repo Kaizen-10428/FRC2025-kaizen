@@ -16,7 +16,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.Elevator;
-import frc.robot.subsystems.Grabber;
+import frc.robot.subsystems.Funnel;
 
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
@@ -73,7 +73,7 @@ public class Robot extends TimedRobot {
     m_robotContainer.elevator.setDefaultCommand(new RunCommand(()->m_robotContainer.elevator.ElevatorUP(0), m_robotContainer.elevator));
     //m_robotContainer.gimbal.setDefaultCommand(new RunCommand(() -> m_robotContainer.gimbal.GimbalControl(0),m_robotContainer.gimbal));
     m_robotContainer.coral.setDefaultCommand(new RunCommand(()-> m_robotContainer.coral.Take(0.0), m_robotContainer.coral));
-
+    m_robotContainer.funnel.setDefaultCommand(new RunCommand(() -> m_robotContainer.funnel.CoralAcceptor(0), m_robotContainer.funnel));
 
   }
 

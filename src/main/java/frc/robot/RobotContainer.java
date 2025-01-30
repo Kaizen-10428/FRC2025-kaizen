@@ -23,7 +23,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.CoralPlacer;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.Elevator;
-import frc.robot.subsystems.Grabber;
+import frc.robot.subsystems.Funnel;
 import frc.robot.subsystems.gimbal;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.elevatorcmd;
@@ -38,6 +38,9 @@ public class RobotContainer {
   //public final gimbal gimbal = new gimbal();
   public final CoralPlacer coral = new CoralPlacer();
   private final SendableChooser<Command> autoChooser;
+  public final Funnel funnel = new Funnel();
+  private final DriveSubsystem m_robotDrive = new DriveSubsystem();
+
 
 
   public RobotContainer(){
@@ -54,14 +57,14 @@ public class RobotContainer {
 
         
     configureBindings();  
-    // m_robotDrive.setDefaultCommand(
-    //   new RunCommand(
-    //     () -> m_robotDrive.drive(
-    //       -MathUtil.applyDeadband(m_driverController.getLeftY(),OIConstants.kDriveDeadband),
-    //       -MathUtil.applyDeadband(m_driverController.getLeftX(),OIConstants.kDriveDeadband),
-    //       -MathUtil.applyDeadband(m_driverController.getRightX(),OIConstants.kDriveDeadband),
-    //       false),
-    //       m_robotDrive));
+    m_robotDrive.setDefaultCommand(
+      new RunCommand(
+        () -> m_robotDrive.drive(
+          -MathUtil.applyDeadband(m_driverController.getLeftY(),0.06),
+          -MathUtil.applyDeadband(m_driverController.getLeftX(),0.06),
+          -MathUtil.applyDeadband(m_driverController.getRightX(),0.06),
+          false),
+          m_robotDrive));
 
 
   }
@@ -95,30 +98,28 @@ public class RobotContainer {
     () -> elevator.degele(46),
     elevator)); 
 
-    new JoystickButton(m_mechController, Button.kSquare.value)
+  new JoystickButton(m_mechController, Button.kSquare.value)
   .onTrue(new RunCommand(
     () -> elevator.degele(20),
     elevator));
-    
-    // new JoystickButton(m_mechController, Button.kR1.value)
-    // .whileTrue(new RunCommand(
-    //   () -> coral.Take(0.6), coral));
-      
-    // new JoystickButton(m_mechController, Button.kL1.value)
-    // .whileTrue(new RunCommand(
-    //   () -> coral.Take(-0.6), coral));
-    
-    
-       new POVButton(m_mechController, 0)
+  
+  new POVButton(m_mechController, 0)
     .whileTrue( new RunCommand(
       () -> coral.Take(-0.4),coral));
 
-
-          
-      new POVButton(m_mechController, 180)
+  new POVButton(m_mechController, 180)
       .whileTrue( new RunCommand(
-        () -> coral.Take(0.3),coral));
-  
+        () -> coral.Take(0.4),coral));
+
+  new POVButton(m_mechController, 90)
+      .whileTrue( new RunCommand(
+        () -> funnel.CoralAcceptor(0.4),funnel));
+    
+  new POVButton(m_mechController, 270)
+        .whileTrue( new RunCommand(
+          () -> funnel.CoralAcceptor(-0.4),funnel));
+
+    
     // new POVButton(m_mechController, 180)
     // .onTrue( new RunCommand(
     //   () -> gimbal.GimbalDogree(10),gimbal));
