@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.Elevator;
-import frc.robot.subsystems.Funnel;
 
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
@@ -26,7 +25,7 @@ public class Robot extends TimedRobot {
   public Robot() {
     m_robotContainer = new RobotContainer();
     
-    m_robotContainer.elevator.encoder.setPosition(0);
+    // m_robotContainer.elevator.encoder.setPosition(0);
     
 
   }
@@ -36,7 +35,7 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().run();
 
     SmartDashboard.putNumber("Elevator-encoder", m_robotContainer.elevator.encoder.getPosition());
-    //SmartDashboard.putNumber("Absolute Encoder Gimbal", Math.toDegrees(m_robotContainer.gimbal.encoder.getPosition()));
+    SmartDashboard.putNumber("Absolute Encoder Gimbal", Math.toDegrees(m_robotContainer.gimbal.encoder.getPosition()));
 
   }
 
@@ -52,7 +51,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
-    // m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
@@ -72,9 +71,9 @@ public class Robot extends TimedRobot {
     }
     // m_robotContainer.slide.setDefaultCommand(new RunCommand(() -> m_robotContainer.slide.LinearSlider(0),m_robotContainer.slide));
     m_robotContainer.elevator.setDefaultCommand(new RunCommand(()->m_robotContainer.elevator.ElevatorUP(0), m_robotContainer.elevator));
-    //m_robotContainer.gimbal.setDefaultCommand(new RunCommand(() -> m_robotContainer.gimbal.GimbalControl(0),m_robotContainer.gimbal));
-    m_robotContainer.coral.setDefaultCommand(new RunCommand(()-> m_robotContainer.coral.Take(0.0), m_robotContainer.coral));
-    m_robotContainer.funnel.setDefaultCommand(new RunCommand(() -> m_robotContainer.funnel.CoralAcceptor(0), m_robotContainer.funnel));
+    m_robotContainer.gimbal.setDefaultCommand(new RunCommand(() -> m_robotContainer.gimbal.GimbalControl(0),m_robotContainer.gimbal));
+    // m_robotContainer.coral.setDefaultCommand(new RunCommand(()-> m_robotContainer.coral.Take(0.0), m_robotContainer.coral));
+    // m_robotContainer.funnel.setDefaultCommand(new RunCommand(() -> m_robotContainer.funnel.coralstart(0), m_robotContainer.funnel));
 
   }
 

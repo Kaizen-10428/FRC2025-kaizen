@@ -4,11 +4,12 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.LimelightHelpers;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.DriveSubsystem;
 
-public class Limelight3DDistance {
+public class Limelight3DDistance extends SubsystemBase{
 
     private final NetworkTable limelightTable;
 
@@ -25,7 +26,7 @@ public class Limelight3DDistance {
         return LimelightHelpers.getTV("");
     }
 
-    public void updateDistance(DriveSubsystem m_robotDrive) {
+    public void updateDistance(DriveSubsystem m_robotDrive, Integer offset) {
         SmartDashboard.putBoolean("Cross Button", true);
 
         if (hasTarget()) {
@@ -37,12 +38,26 @@ public class Limelight3DDistance {
             SmartDashboard.putNumber("yaw", distance[4]);
             SmartDashboard.putNumber("roll", distance[5]);
             if (distance[2]>0.3){
-                m_robotDrive.drive(-(distance[2]-1)*0.5,distance[0], -(distance[4]*0.007), true);
+                m_robotDrive.drive((distance[2]-0.3)*0.8, -(distance[0]+ offset), -(distance[4]*0.01), false,true);
             }
         }else{
-            m_robotDrive.drive(0,0,0, true);
+            m_robotDrive.drive(0,0,0, true,false);
 
         } 
 
+    }
+
+    public void stoprobot(DriveSubsystem m_robotDrive){
+        m_robotDrive.drive(0, 0, 0, false, true);
+    }
+
+    public void align(DriveSubsystem m_robotDrive, Integer aprilID){
+        double[] distance1 = getTargetCamerSpace();
+        if(LimelightHelpers.getFiducialID("limelight")==aprilID){
+            m_robotDrive.drive(0, 0, -distance1[4]*0.01, false, true);
+        }
+        else{
+            stoprobot(m_robotDrive);
+        }
     }
 }

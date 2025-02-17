@@ -1,5 +1,7 @@
 package frc.robot;
 
+import org.opencv.core.Mat;
+
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
@@ -46,11 +48,11 @@ public static final class ElevatorModule{
     public static final SparkMaxConfig RelevatorConfig = new SparkMaxConfig();
     public static final SparkMaxConfig LelevatorConfig = new SparkMaxConfig();
     static{
-        LelevatorConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).pid(0.055,0,0).velocityFF(0.005).outputRange(-1,1);
-        RelevatorConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).pid(0.55,0,0).velocityFF(0.005).outputRange(-1,1); 
+        LelevatorConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).pid(0.03,0,0).velocityFF(0).outputRange(-1,1);
+        RelevatorConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).pid(0.03,0,0).velocityFF(0).outputRange(-1,1); 
         LelevatorConfig.encoder.positionConversionFactor(1).velocityConversionFactor(1);
         LelevatorConfig.closedLoop.positionWrappingEnabled(false);
-        RelevatorConfig.follow(13,true);
+        RelevatorConfig.follow(9,false);
         LelevatorConfig.alternateEncoder.inverted(true);
         
         
@@ -60,13 +62,31 @@ public static final class ElevatorModule{
             .allowedClosedLoopError(0.05);
 }
 }
-    public static final class GimabalModule{
-        public static final SparkMaxConfig GimbalMotorConfig = new SparkMaxConfig();
+public static final class GimabalModule{
+    public static final SparkMaxConfig GimbalMotorConfig = new SparkMaxConfig();
+    public static final SparkMaxConfig GImbalMotorConfig1 = new SparkMaxConfig();
+    static{
+        GimbalMotorConfig.closedLoop.feedbackSensor(FeedbackSensor.kAbsoluteEncoder).pid(0.4,0,0).velocityFF(0.01).outputRange(-1,1);
+        GimbalMotorConfig.absoluteEncoder.positionConversionFactor(2*Math.PI).velocityConversionFactor(2*Math.PI/60);
+        GimbalMotorConfig.closedLoop.positionWrappingEnabled(false);
+        GImbalMotorConfig1.follow(13, true);
+        GimbalMotorConfig.absoluteEncoder.inverted(false);
+        GimbalMotorConfig.inverted(false);
+
+    }       
+}
+    
+    public static final class ArmModule{
+        public static final SparkMaxConfig ArmMotorConfig1 = new SparkMaxConfig();
+        // public static final SparkMaxConfig ArmMotorConfig2 = new SparkMaxConfig();
+
         static{
-            GimbalMotorConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).pid(0.1,0,0).velocityFF(0).outputRange(-1,1);
-            GimbalMotorConfig.encoder.positionConversionFactor(1).velocityConversionFactor(1);
-            GimbalMotorConfig.closedLoop.positionWrappingEnabled(false);
+            ArmMotorConfig1.closedLoop.feedbackSensor(FeedbackSensor.kAbsoluteEncoder).pid(0.01,0,0).velocityFF(0).outputRange(-1,1);
+            // ArmMotorConfig2.closedLoop.positionWrappingEnabled(false);
+            // ArmMotorConfig1.encoder.positionConversionFactor(1).velocityConversionFactor(1);
+            ArmMotorConfig1.closedLoop.positionWrappingEnabled(false);
+            // ArmMotorConfig2.follow(13,true);
+        }
     }
-    }
-    }
+}
 

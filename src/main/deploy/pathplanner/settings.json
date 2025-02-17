@@ -3,15 +3,16 @@
   "robotLength": 0.9,
   "holonomicMode": true,
   "pathFolders": [
+    "Blue Bottom",
     "Blue Middle",
     "Blue Top",
-    "Blue Bottom"
+    "Auto testing"
   ],
   "autoFolders": [
     "Auto-testing",
     "Blue"
   ],
-  "defaultMaxVel": 5.0,
+  "defaultMaxVel": 3.0,
   "defaultMaxAccel": 5.0,
   "defaultMaxAngVel": 540.0,
   "defaultMaxAngAccel": 720.0,

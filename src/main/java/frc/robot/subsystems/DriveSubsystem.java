@@ -48,7 +48,9 @@ public class DriveSubsystem extends SubsystemBase {
     public MAXSwerveModule[] states= new MAXSwerveModule[4];
   public static RobotConfig config;
 
-
+  double xSpeedDelivered;
+  double ySpeedDelivered;
+  double rotDelivered;
   
   SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
       DriveConstants.kDriveKinematics,
@@ -68,29 +70,33 @@ public class DriveSubsystem extends SubsystemBase {
       e.printStackTrace();
     }
 
-    // Configure AutoBuilder last
-    AutoBuilder.configure(
-            this::getPose, // Robot pose supplier
-            this::resetPose, // Method to reset odometry (will be called if your auto has a starting pose)
-            this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-            (speeds, feedforwards) -> driveRobotRelative(speeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
-            new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic drive trains
-                    new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
-                    new PIDConstants(5.0, 0.0, 0.0) // Rotation PID constants
-            ),
-            config, // The robot configuration
-            () -> {
-              var alliance = DriverStation.getAlliance();
-              if (alliance.isPresent()) {
-                return alliance.get() == DriverStation.Alliance.Red;
-              }
-              return false;
-            },
-            this // Reference to this subsystem to set requirements
-    );
-  }
-
-  @Override
+    zeroHeading();
+    setstates();
+        // Configure AutoBuilder last
+        AutoBuilder.configure(
+                this::getPose, // Robot pose supplier
+                this::resetPose, // Method to reset odometry (will be called if your auto has a starting pose)
+                this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+                (speeds, feedforwards) -> driveRobotRelative(speeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
+                new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic drive trains
+                        new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
+                        new PIDConstants(5.0, 0.0, 0.0) // Rotation PID constants
+                ),
+                config, // The robot configuration
+                () -> {
+                  var alliance = DriverStation.getAlliance();
+                  if (alliance.isPresent()) {
+                    return alliance.get() == DriverStation.Alliance.Red;
+                  }
+                  return false;
+                },
+                this // Reference to this subsystem to set requirements
+        );
+      }
+    
+      
+    
+      @Override
   public void periodic() {
     m_odometry.update(
         Rotation2d.fromDegrees(yaw()),
@@ -100,6 +106,12 @@ public class DriveSubsystem extends SubsystemBase {
             m_rearLeft.getPosition(),
             m_rearRight.getPosition()
         });
+  }
+  private void setstates() {
+    states[0] = m_frontLeft;
+    states[1] = m_frontRight;
+    states[2]= m_rearLeft;
+    states[3] = m_rearRight;
   }
 
   public void resetPose(Pose2d pose){
@@ -127,10 +139,19 @@ public class DriveSubsystem extends SubsystemBase {
         pose);
   }
 
-  public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
-    double xSpeedDelivered = xSpeed * DriveConstants.kMaxSpeedMetersPerSecond;
-    double ySpeedDelivered = ySpeed * DriveConstants.kMaxSpeedMetersPerSecond;
-    double rotDelivered = rot * DriveConstants.kMaxAngularSpeed;
+  public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, boolean Limelight) {
+    if (Limelight){
+      xSpeedDelivered = xSpeed * DriveConstants.kMaxLimelightSpeedMetersPerSecond;
+      ySpeedDelivered = ySpeed * DriveConstants.kMaxLimelightSpeedMetersPerSecond;
+      rotDelivered = rot * DriveConstants.kMaxAngularSpeed;
+  
+      }else{
+        xSpeedDelivered = xSpeed * DriveConstants.kMaxSpeedMetersPerSecond;
+        ySpeedDelivered = ySpeed * DriveConstants.kMaxSpeedMetersPerSecond;
+        rotDelivered = rot * DriveConstants.kMaxAngularSpeed;
+  
+      }
+    
 
     var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(
         fieldRelative
@@ -182,6 +203,7 @@ public class DriveSubsystem extends SubsystemBase {
   }
   public double yaw(){
     return (-m_gyro.getYaw());
+
   }
 
 

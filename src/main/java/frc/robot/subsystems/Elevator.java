@@ -5,6 +5,7 @@ import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -22,15 +23,16 @@ public class Elevator extends SubsystemBase{
      private final SparkClosedLoopController LElevatorPID;
      private final SparkClosedLoopController RElevatorPID;
 
-     private final TrapezoidProfile m_Profile = new TrapezoidProfile(new TrapezoidProfile.Constraints(50,30));
+     private final TrapezoidProfile m_Profile = new TrapezoidProfile(new TrapezoidProfile.Constraints(5,3));
      private TrapezoidProfile.State m_goal = new TrapezoidProfile.State();
      private TrapezoidProfile.State m_setpoint = new TrapezoidProfile.State();
      private TrapezoidProfile.State m_currState = new TrapezoidProfile.State();
+     public static DigitalInput Input;
 
 
 
      public Elevator(){
-        LElevator = new SparkMax(13,MotorType.kBrushless);
+        LElevator = new SparkMax(9,MotorType.kBrushless);
         encoder = LElevator.getEncoder();
         RElevator = new SparkMax(10,MotorType.kBrushless);
         LElevatorPID = LElevator.getClosedLoopController();
@@ -40,6 +42,8 @@ public class Elevator extends SubsystemBase{
         encoder.setPosition(0.0);
         LElevator.set(0);
         RElevator.set(0);
+        Input = new DigitalInput(0);
+
 
         
 
@@ -48,7 +52,7 @@ public class Elevator extends SubsystemBase{
     public void ElevatorUP(double R2){
         enc = encoder.getPosition();
         SmartDashboard.putNumber("encoder", enc);
-        if (enc<75){
+        if (enc<78){
             LElevator.set( R2*0.2);
             RElevator.set(R2*0.2);
         }else{
@@ -58,13 +62,18 @@ public class Elevator extends SubsystemBase{
     }   
     public void ElevatorDown(double L2){
         double enc = encoder.getPosition();
-       
-        if (enc>2){
-            LElevator.set(-(L2*0.2));
-            RElevator.set(-(L2*0.2));
-        }else{
+        if(Input.get() == false){
             LElevator.set(0);
             RElevator.set(0);
+            SmartDashboard.putBoolean("Limit Switch", true);
+            encoder.setPosition(0.0);
+
+        }
+       else if (enc>3){
+            LElevator.set(-(L2*0.2));
+            RElevator.set(-(L2*0.2));
+            SmartDashboard.putBoolean("Limit Switch", false);
+
         }
     } 
     
@@ -82,7 +91,8 @@ public class Elevator extends SubsystemBase{
 
     public void L2Control(double deg){
         m_currState = new TrapezoidProfile.State(encoder.getPosition(), encoder.getVelocity());
-        m_goal = new TrapezoidProfile.State(Math.toRadians(deg), 0);
+        double calcdegree = (1000 * deg)/17.66;
+        m_goal = new TrapezoidProfile.State(Math.toRadians(calcdegree), 0);
         m_setpoint = m_Profile.calculate(0.02, m_setpoint, m_goal);
         LElevatorPID.setReference(m_setpoint.position, ControlType.kPosition);
     }
